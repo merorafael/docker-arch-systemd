@@ -1,19 +1,18 @@
 FROM base/archlinux:latest
-MAINTAINER Rafael Mello <merorafael@gmail.com>
-ENV container docker
+LABEL MAINTAINER="Rafael Mello <merorafael@gmail.com>, pan93412 <pan93412@gmail.com>"
+
+# Arguments
+ARG locale="pt_BR.UTF-8 UTF-8"
+ARG mirrorCountry="Brazil"
 
 # Arch settings
-COPY etc/locale.gen /etc/
-COPY etc/pacman.d/mirrorlist /etc/pacman.d/
+RUN echo -ne "\n$locale\n" > /etc/locale.gen
 
-# Update Arch
-RUN pacman --noconfirm -Sy archlinux-keyring
-RUN pacman --noconfirm -Sy \
-        pacman \
-        pacman-mirrorlist \
-    && rm -rf /etc/pacman.d/mirrorlist.pacnew \
-    && pacman-db-upgrade \
-    && pacman --noconfirm -Syu
+# Update Arch & Set up mirrors.
+RUN pacman -Sy reflector
+RUN reflector -c $mirrorCountry --sort age --sort rate --threads 100 --save /etc/pacman.d/mirrorlist
+RUN pacman --noconfirm -S archlinux-keyring
+RUN pacman --noconfirm -Su
 
 # Clean services
 RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
