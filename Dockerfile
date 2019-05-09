@@ -1,4 +1,4 @@
-FROM base/archlinux:latest
+FROM archlinux/base:latest
 LABEL MAINTAINER="Rafael Mello <merorafael@gmail.com>, pan93412 <pan93412@gmail.com>"
 
 # Arguments
@@ -6,11 +6,11 @@ ARG locale="pt_BR.UTF-8 UTF-8"
 ARG mirrorCountry="Brazil"
 
 # Arch settings
-RUN echo -ne "\n$locale\n" > /etc/locale.gen
+RUN echo -ne "\n$locale\n" >> /etc/locale.gen
 RUN locale-gen
 
 # Update Arch & Set up mirrors.
-RUN pacman -Sy reflector
+RUN pacman -Sy --noconfirm reflector
 RUN reflector -c $mirrorCountry --sort age --sort rate --threads 100 --save /etc/pacman.d/mirrorlist
 RUN pacman --noconfirm -S archlinux-keyring
 RUN pacman --noconfirm -Su
