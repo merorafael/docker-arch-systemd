@@ -7,6 +7,7 @@ ARG mirrorCountry="Brazil"
 
 # Arch settings
 RUN echo -ne "\n$locale\n" > /etc/locale.gen
+RUN locale-gen
 
 # Update Arch & Set up mirrors.
 RUN pacman -Sy reflector
